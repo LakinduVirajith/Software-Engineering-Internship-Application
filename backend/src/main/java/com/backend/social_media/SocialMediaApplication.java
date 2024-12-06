@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class SocialMediaApplication {
 
 	@Value("${server.port}")
-	private String port;
+	private String PORT;
 
 	public static void main(String[] args) {
 		SpringApplication.run(SocialMediaApplication.class, args);
@@ -19,6 +19,6 @@ public class SocialMediaApplication {
 
 	@GetMapping
 	public String home() {
-		return "Social Media App is up and running on port " + port;
+		return "Social Media App is up and running on port " + PORT;
 	}
 }

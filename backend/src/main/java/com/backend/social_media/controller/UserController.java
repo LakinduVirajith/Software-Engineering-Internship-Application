@@ -1,6 +1,7 @@
 package com.backend.social_media.controller;
 
 import com.backend.social_media.collection.User;
+import com.backend.social_media.dto.LoginDTO;
 import com.backend.social_media.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,5 +21,10 @@ public class UserController {
     @PostMapping("/sign-up")
     public ResponseEntity<?> userSignUp(@Valid @RequestBody User user) {
         return userService.userSignUp(user);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> userLogin(@Valid @RequestBody LoginDTO loginDTO) {
+        return userService.userLogin(loginDTO);
     }
 }

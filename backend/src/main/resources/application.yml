@@ -5,6 +5,15 @@ spring:
   profiles:
     active: dev
 
+#JWT
+application:
+  security:
+    jwt:
+      secret-key: ${JWT_SECRET}
+      expiration: 7200000 #TWO HOURS
+      refresh-token:
+        expiration: 2419200000 #ONE MONTH
+
 ---
 
 spring:
