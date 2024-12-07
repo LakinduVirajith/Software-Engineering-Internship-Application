@@ -1,10 +1,7 @@
 package com.backend.social_media.dto;
 
-import java.time.LocalDate;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -26,8 +23,4 @@ public class UserDTO {
     @NotNull(message = "Password is required.")
     @Size(min = 6, max = 20, message = "Password must be between 6 and 20 characters.")
     private String password;
-
-    @NotNull(message = "Date of Birth is required.")
-    @Past(message = "Date of Birth must be a past date.")
-    private LocalDate dateOfBirth;
 }

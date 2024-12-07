@@ -9,7 +9,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 
@@ -28,8 +27,6 @@ public class User implements UserDetails {
     private String email;
 
     private String password;
-
-    private LocalDate dateOfBirth;
 
     @CreatedDate
     private LocalDateTime createdDate;
