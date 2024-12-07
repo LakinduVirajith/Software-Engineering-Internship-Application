@@ -7,4 +7,6 @@ public interface PostService {
     ResponseEntity<?> addPost(MultipartFile image);
 
     ResponseEntity<?> getAllPosts(int page, int size, String sortBy);
+
+    ResponseEntity<?> updateLikes(String postId);
 }

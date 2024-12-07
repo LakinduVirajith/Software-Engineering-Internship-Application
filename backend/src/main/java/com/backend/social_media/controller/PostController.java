@@ -26,4 +26,9 @@ public class PostController {
                                      @RequestParam(defaultValue = "time") String sortBy) {
         return postService.getAllPosts(page, size, sortBy);
     }
+
+    @PutMapping("/like/{postId}")
+    public ResponseEntity<?> updateLikes(@PathVariable String postId) {
+        return postService.updateLikes(postId);
+    }
 }

@@ -8,11 +8,15 @@ import lombok.Data;
 @Builder
 public class PostDTO {
     
+    private String postId;
+
     private String userName;
 
     private String image;
 
     private Integer likes;
+
+    private boolean isLiked;
 
     private LocalDateTime modifiedDate;
 }

@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -87,10 +88,40 @@ public class PostServiceImpl implements PostService {
 
     private PostDTO convertToPostDTO(Post post) {
         return PostDTO.builder()
+                        .postId(post.get_id())
                         .userName(userRepository.findById(post.getUserId()).get().getUserName())
                         .image(post.getImage())
                         .likes(post.getLikes().size())
+                        .isLiked(post.getLikes().contains(commonService.getUserId()))
                         .modifiedDate(post.getModifiedDate())
                         .build();
+    }
+
+    @Override
+    public ResponseEntity<?> updateLikes(String postId) {
+        try{
+            Optional<Post> postOptional = postRepository.findById(postId);
+            if (postOptional.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                    .body("Post not found.");
+            }
+
+            Post post = postOptional.get();
+            List<String> likes = post.getLikes();
+
+            if (likes.contains(commonService.getUserId())) {
+                likes.remove(commonService.getUserId()); // UNLIKE THE POST
+            } else {
+                likes.add(commonService.getUserId()); // LIKE THE POST
+            }
+
+            post.setLikes(likes);
+            postRepository.save(post);
+
+            return ResponseEntity.ok("Post likes updated successfully.");
+        }catch (Exception e){
+            log.error("Error occurred while updating the likes: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).body("An error occurred while updating the likes.");
+        }
     }
 }
