@@ -4,6 +4,7 @@ import com.backend.social_media.collection.User;
 import com.backend.social_media.config.jwt.JwtService;
 import com.backend.social_media.dto.AuthenticationResponseDTO;
 import com.backend.social_media.dto.LoginDTO;
+import com.backend.social_media.dto.UserDTO;
 import com.backend.social_media.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,19 +29,25 @@ public class UserServiceImpl implements UserService {
     private final UserDetailsService userDetailsService;
 
     @Override
-    public ResponseEntity<?> userSignUp(User user) {
+    public ResponseEntity<?> userSignUp(UserDTO userDTO) {
         try {
-            if (userRepository.findUserByUserName(user.getUserName()).isPresent()) {
+            if (userRepository.findUserByUserName(userDTO.getUserName()).isPresent()) {
                 return ResponseEntity.badRequest().body("The chosen username is unavailable. Please try a different one.");
             }
-            if (userRepository.findUserByEmail(user.getEmail()).isPresent()) {
+            if (userRepository.findUserByEmail(userDTO.getEmail()).isPresent()) {
                 return ResponseEntity.badRequest().body("The provided email address is already associated with an existing account.");
             }
 
             // HASH THE PASSWORD BEFORE SAVING
-            String hashedPassword = passwordEncoder.encode(user.getPassword());
-            user.setPassword(hashedPassword);
-
+            String hashedPassword = passwordEncoder.encode(userDTO.getPassword());
+            User user = User.builder()
+                            .fullName(userDTO.getFullName())
+                            .userName(userDTO.getUserName())
+                            .email(userDTO.getEmail())
+                            .password(hashedPassword)
+                            .dateOfBirth(userDTO.getDateOfBirth())
+                            .build();
+                            
             userRepository.save(user);
             return ResponseEntity.status(201).body("User signed up successfully!");
         }catch (Exception e){
