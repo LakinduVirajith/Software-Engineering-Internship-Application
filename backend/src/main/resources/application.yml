@@ -1,0 +1,37 @@
+server:
+  port: 8080
+
+spring:
+  profiles:
+    active: dev
+
+#JWT SETTINGS
+application:
+  security:
+    jwt:
+      secret-key: ${JWT_SECRET}
+      expiration: 7200000 #TWO HOURS
+      refresh-token:
+        expiration: 2419200000 #ONE MONTH
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+  data:
+    mongodb:
+      uri: ${MONGODB_URI}
+      database: social-media-dev
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+  data:
+    mongodb:
+      uri: ${MONGODB_URI}
+      database: social-media-prod
