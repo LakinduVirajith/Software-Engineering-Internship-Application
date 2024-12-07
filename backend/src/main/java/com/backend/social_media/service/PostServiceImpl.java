@@ -2,14 +2,25 @@ package com.backend.social_media.service;
 
 import com.backend.social_media.collection.Post;
 import com.backend.social_media.common.CommonService;
+import com.backend.social_media.dto.PostDTO;
 import com.backend.social_media.repository.PostRepository;
+import com.backend.social_media.repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Base64;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +28,7 @@ import java.util.Base64;
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
     private final CommonService commonService;
 
     @Override
@@ -43,5 +55,42 @@ public class PostServiceImpl implements PostService {
             log.error("Error occurred while saving the post: {}", e.getMessage(), e);
             return ResponseEntity.status(500).body("An error occurred while creating the post.");
         }
+    }
+
+    @Override
+    public ResponseEntity<?> getAllPosts(int page, int size, String sortBy) {
+        try {
+            Pageable pageable;
+            if (sortBy.equals("time")) {
+                pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
+            } else if (sortBy.equals("likes")) {
+                pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("likes.size")));
+            } else {
+                pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
+            }
+
+            Page<Post> posts = postRepository.findAll(pageable);
+            if (posts.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                    .body("Sorry, no posts available at the moment.");
+            }        
+        
+            List<PostDTO> postDTOs = posts.stream()
+                    .map(this::convertToPostDTO)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok().body(postDTOs);
+        }catch (Exception e){
+            log.error("Error occurred while retrieving the post: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).body("An error occurred while retrieving the post.");
+        }
+    }
+
+    private PostDTO convertToPostDTO(Post post) {
+        return PostDTO.builder()
+                        .userName(userRepository.findById(post.getUserId()).get().getUserName())
+                        .image(post.getImage())
+                        .likes(post.getLikes().size())
+                        .modifiedDate(post.getModifiedDate())
+                        .build();
     }
 }

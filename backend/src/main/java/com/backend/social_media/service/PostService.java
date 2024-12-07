@@ -5,4 +5,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface PostService {
     ResponseEntity<?> addPost(MultipartFile image);
+
+    ResponseEntity<?> getAllPosts(int page, int size, String sortBy);
 }
