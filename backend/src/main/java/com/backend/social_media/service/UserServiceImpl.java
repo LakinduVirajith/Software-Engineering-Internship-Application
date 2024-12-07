@@ -45,7 +45,6 @@ public class UserServiceImpl implements UserService {
                             .userName(userDTO.getUserName())
                             .email(userDTO.getEmail())
                             .password(hashedPassword)
-                            .dateOfBirth(userDTO.getDateOfBirth())
                             .build();
                             
             userRepository.save(user);
