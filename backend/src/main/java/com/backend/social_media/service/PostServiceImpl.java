@@ -13,7 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -72,8 +71,8 @@ public class PostServiceImpl implements PostService {
 
             Page<Post> posts = postRepository.findAll(pageable);
             if (posts.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                    .body("Sorry, no posts available at the moment.");
+                return ResponseEntity.status(404)
+                                    .body("No more posts available at the moment. Please check back later.");
             }        
         
             List<PostDTO> postDTOs = posts.stream()
@@ -102,7 +101,7 @@ public class PostServiceImpl implements PostService {
         try{
             Optional<Post> postOptional = postRepository.findById(postId);
             if (postOptional.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                return ResponseEntity.status(404)
                                     .body("Post not found.");
             }
 

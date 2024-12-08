@@ -5,8 +5,8 @@ import { Link as ReactRouterLink } from 'react-router-dom'
 import { Link as ChakraLink } from '@chakra-ui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-import axios from 'axios';
 import toast from 'react-hot-toast'
+import { login } from '../services/authService';
 
 function Login() {
   const [userName, setUserName] = React.useState(null);
@@ -18,40 +18,24 @@ function Login() {
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
-    const userData = {
-      userName,
-      password,
-    };
+    const response = await login({ userName, password });
+    if(response){
+      toast.success(response.status + ": " + response.data.message)
+      
+      const { accessToken, refreshToken } = response.data;
+      localStorage.setItem('accessToken', accessToken);
+      document.cookie = `refreshToken=${refreshToken}; Path=/; HttpOnly; Secure`;
 
-    try {
-      const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/user/login`, userData, {
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-
-      if (response.status === 200) {
-        toast.success(response.status + ": " + response.data.message)
-        resetForm();
+      resetForm();
+      setTimeout(() => {
         navigate('/home');
-      }
-    } catch (error) {
-      console.error("Error during login:", error);
-      if (error.response) {
-        if (error.response.data) {
-          toast.error(`${error.response.status}: ${error.response.data}`);
-        } else {
-          toast.error(`${error.response.status}: Invalid username or password`);
-        }
-      } else {
-        toast.error("Something went wrong. Please try again later.");
-      }
+      }, 1000);
     }
   }
 
   const resetForm = () => {
-    setUserName('');
-    setPassword('');
+    setUserName(null);
+    setPassword(null);
   };
 
   return (
@@ -59,7 +43,12 @@ function Login() {
       <Center height="100vh" bg="gray.100">
         <Card align='center' width="50vh" boxShadow="xl" borderRadius="2xl" padding="1">
           <CardBody align='center'>
-            <Text fontSize='4xl' fontWeight="bold" marginBottom={4}>WELCOME BACK</Text>
+            <Text 
+              fontSize='4xl'
+              fontWeight="bold"
+              marginBottom={4}>
+                WELCOME BACK
+            </Text>
 
             <FormControl onSubmit={(e) => e.preventDefault()}>
               <Input 
@@ -85,7 +74,7 @@ function Login() {
             </FormControl>
 
             <Button 
-              colorScheme='red'
+              colorScheme='blue'
               size='md'
               width='full'
               onClick={handleSubmit}>
@@ -94,8 +83,11 @@ function Login() {
 
             <Text marginTop={4}>
               Don't have an account yet?{' '}
-              <ChakraLink fontWeight="medium" as={ReactRouterLink} to='/sign-up'>
-                Create
+              <ChakraLink 
+                fontWeight="medium" 
+                as={ReactRouterLink} 
+                to='/sign-up'>
+                  Create
               </ChakraLink>
             </Text>
           </CardBody>

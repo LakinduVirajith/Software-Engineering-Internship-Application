@@ -5,8 +5,8 @@ import { Link as ReactRouterLink } from 'react-router-dom'
 import { Link as ChakraLink } from '@chakra-ui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-import axios from 'axios';
 import toast from 'react-hot-toast'
+import { signUp } from '../services/authService';
 
 function SignUp() {
   const [fullName, setFullName] = React.useState(null);
@@ -28,49 +28,33 @@ function SignUp() {
       return;
     }
 
-    const userData = {
-      fullName,
-      userName,
-      email,
-      password,
-    };
-
-    try {
-      const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/user/sign-up`, userData, {
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-
-      if (response.status === 201) {
-        toast.success(response.status + ": " + response.data)
-        resetForm();
-        navigate('/login');
-      }
-    } catch (error) {
-      console.error("Error during signup:", error);
-      if (error.response) {  
-        toast.error(error.response.status + ": " + error.response.data)
-      } else {
-        toast.error("Something went wrong. Please try again later.");
-      }
-    }
+    const response = await signUp({ fullName, userName, email, password });
+    if(response){
+      toast.success(response.status + ": " + response.data)
+      resetForm();
+      navigate('/login');
+    }    
   }
 
   const resetForm = () => {
-    setFullName('');
-    setUserName('');
-    setEmail('');
-    setPassword('');
-    setRePassword('');
+    setFullName(null);
+    setUserName(null);
+    setEmail(null);
+    setPassword(null);
+    setRePassword(null);
   };
 
   return (
     <>
-      <Center height="100vh" bg="gray.100">
-        <Card align='center' width="50vh" boxShadow="xl" borderRadius="2xl" padding="1">
+      <Center height='100vh' bg='gray.100'>
+        <Card align='center' width='50vh' boxShadow='xl' borderRadius='2xl' p={1}>
           <CardBody align='center'>
-            <Text fontSize='4xl' fontWeight="bold" marginBottom={4}>SIGN UP</Text>
+            <Text 
+              fontSize='4xl'
+              fontWeight="bold"
+              marginBottom={4}>
+                SIGN UP
+            </Text>
 
             <FormControl onSubmit={(e) => e.preventDefault()}>
               <Input 
@@ -96,8 +80,8 @@ function SignUp() {
 
               <InputGroup size='md' marginBottom={4}>
                 <Input 
-                  pr="4.5rem"
-                  placeholder="Password"
+                  pr='4.5rem'
+                  placeholder='Password'
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}/>
@@ -110,8 +94,8 @@ function SignUp() {
 
               <InputGroup size='md' marginBottom={4}>
                 <Input 
-                  pr="4.5rem"
-                  placeholder="Confirm Password"
+                  pr='4.5rem'
+                  placeholder='Confirm Password'
                   type={showRePassword ? 'text' : 'password'}
                   value={rePassword}
                   onChange={(e) => setRePassword(e.target.value)}/>
@@ -124,7 +108,7 @@ function SignUp() {
             </FormControl>
 
             <Button 
-              colorScheme='red'
+              colorScheme='blue'
               size='md'
               width='full'
               onClick={handleSubmit}>
@@ -133,8 +117,11 @@ function SignUp() {
 
             <Text marginTop={4}>
               Already have an account?{' '}
-              <ChakraLink fontWeight="medium" as={ReactRouterLink} to='/login'>
-                Login
+              <ChakraLink 
+                fontWeight='medium'
+                as={ReactRouterLink}
+                to='/login'>
+                  Login
               </ChakraLink>
             </Text>
           </CardBody>
