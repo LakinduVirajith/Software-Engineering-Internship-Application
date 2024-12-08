@@ -1,13 +1,19 @@
 package com.backend.social_media.service;
 
 import com.backend.social_media.collection.User;
+import com.backend.social_media.common.CommonService;
 import com.backend.social_media.config.jwt.JwtService;
 import com.backend.social_media.dto.AuthenticationResponseDTO;
 import com.backend.social_media.dto.LoginDTO;
 import com.backend.social_media.dto.UserDTO;
+import com.backend.social_media.dto.UserProfileDTO;
 import com.backend.social_media.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Base64;
+import java.util.Optional;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,6 +33,7 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final CommonService commonService;
 
     @Override
     public ResponseEntity<?> userSignUp(UserDTO userDTO) {
@@ -46,6 +53,17 @@ public class UserServiceImpl implements UserService {
                             .email(userDTO.getEmail())
                             .password(hashedPassword)
                             .build();
+
+            if (userDTO.getProfileImage().isEmpty()) {
+                long maxSizeInBytes = 2 * 1024 * 1024; // 2MB
+                if (userDTO.getProfileImage().getSize() > maxSizeInBytes) {
+                    return ResponseEntity.badRequest().body("Image size exceeds the maximum limit of 2MB.");
+                }
+
+                // CONVERT THE IMAGE TO BASE64
+                String base64Image = Base64.getEncoder().encodeToString(userDTO.getProfileImage().getBytes());
+                user.setProfileImage(base64Image);
+            }
                             
             userRepository.save(user);
             return ResponseEntity.status(201).body("User signed up successfully!");
@@ -73,5 +91,22 @@ public class UserServiceImpl implements UserService {
                 .refreshToken(refreshToken)
                 .build()
         );
+    }
+
+    @Override
+    public ResponseEntity<?> userProfile() {
+        Optional<User> optionalUser = userRepository.findById(commonService.getUserId());
+
+        if(optionalUser.isEmpty()){
+            return ResponseEntity.status(404)
+                                    .body("Post not found.");
+        }
+
+        User user = optionalUser.get();
+        return ResponseEntity.ok(UserProfileDTO.builder()
+                        .fullName(user.getFullName())
+                        .userName(user.getUserName())
+                        .profileImage(user.getProfileImage())
+                        .build());
     }
 }
