@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
                             .password(hashedPassword)
                             .build();
 
-            if (userDTO.getProfileImage().isEmpty()) {
+            if (userDTO.getProfileImage() != null && userDTO.getProfileImage().isEmpty()) {
                 long maxSizeInBytes = 2 * 1024 * 1024; // 2MB
                 if (userDTO.getProfileImage().getSize() > maxSizeInBytes) {
                     return ResponseEntity.badRequest().body("Image size exceeds the maximum limit of 2MB.");
@@ -103,10 +103,11 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = optionalUser.get();
-        return ResponseEntity.ok(UserProfileDTO.builder()
+        UserProfileDTO userProfileDTO = UserProfileDTO.builder()
                         .fullName(user.getFullName())
                         .userName(user.getUserName())
                         .profileImage(user.getProfileImage())
-                        .build());
+                        .build();
+        return ResponseEntity.ok(userProfileDTO);
     }
 }
