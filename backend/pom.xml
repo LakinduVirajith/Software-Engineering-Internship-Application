@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.backend</groupId>
-	<artifactId>social-media</artifactId>
+	<artifactId>social-media-backend</artifactId>
 	<version>1.0.0</version>
 	<name>social-media</name>
 	<description>social-media-web-backend</description>

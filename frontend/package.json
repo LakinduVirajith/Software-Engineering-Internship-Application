@@ -1,6 +1,6 @@
 {
-  "name": "frontend",
-  "version": "0.1.0",
+  "name": "social-media-frontend",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@chakra-ui/react": "^2.10.3",

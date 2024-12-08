@@ -1,0 +1,36 @@
+version: '3.8'
+name: social-media-application
+
+services:
+  # Backend service using Spring Boot
+  backend:
+    image: social-media-backend:1.0.0
+    container_name: backend-application
+    build:
+      context: ./backend
+    ports:
+      - 5000:5000
+    environment:
+      - SPRING_PROFILES_ACTIVE=${ACTIVE_PROFILE}
+      - JWT_SECRET=${JWT_SECRET}
+      - MONGODB_URI=${MONGODB_URI}
+    networks:
+      - social-app-network
+
+  # Frontend service using React
+  frontend:
+    image: social-media-frontend:1.0.0
+    container_name: frontend-application
+    build:
+      context: ./frontend
+    ports:
+      - 3000:80
+    networks:
+      - social-app-network
+
+networks:
+  social-app-network:
+    driver: bridge
+
+# docker-compose up --build
+# docker-compose down
