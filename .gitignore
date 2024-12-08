@@ -6,3 +6,6 @@
 
 ### VS Code ###
 .vscode/
+
+### SECRETS FILE
+secrets.txt
