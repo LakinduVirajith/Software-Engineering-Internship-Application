@@ -1,41 +1,10 @@
-import axios from 'axios';
 import toast from 'react-hot-toast';
-
-const checkConfig = (navigate) => {
-    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-    const accessToken = localStorage.getItem('accessToken');
-
-    if (!API_BASE_URL) {
-      console.error('API Base URL is not configured!');
-      toast.error('Internal configuration error. Please contact support.');
-      navigate('/login');
-      return false;
-    }
-  
-    if (!accessToken) {
-      console.error('Missing access token!');
-      toast.error('Authentication error. Please login again.');
-      navigate('/login');
-      return false;
-    }
-  
-    return {API_BASE_URL, accessToken};
-};
+import axiosInstance from '../api/axiosInstance';
 
 // SERVICE TO FETCH POST
-export const fetchPosts = async (pageNumber, pageSize, sortBy, navigate) => {
-    const config = checkConfig(navigate);
-    if (!config) {
-        return;
-    }
-
-    const { API_BASE_URL, accessToken } = config;
+export const fetchPosts = async (pageNumber, pageSize, sortBy) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/post/all`, {
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`,
-            },
+        const response = await axiosInstance.get('/post/all', {
             params: {
                 page: pageNumber,
                 size: pageSize,
@@ -54,25 +23,12 @@ export const fetchPosts = async (pageNumber, pageSize, sortBy, navigate) => {
 };
 
 // SERVICE TO UPDATE LIKES
-export const updateLikes = async (postId, navigate) => {
-    const config = checkConfig(navigate);
-    if (!config) {
-        return;
-    }
-
-    const { API_BASE_URL, accessToken } = config;
+export const updateLikes = async (postId) => {
     try {    
-        const response = await axios.put(`${API_BASE_URL}/post/like/${postId}`,
-            null ,
-            {
-                headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`,
-            },
-        });
+        const response = await axiosInstance.put(`/post/like/${postId}`);
         return response.data;
     } catch (error) {
         console.error('Error during like action:', error);
-      toast.error('Something went wrong. Please try again later.');
+        toast.error('Something went wrong. Please try again later.');
     }
 };
