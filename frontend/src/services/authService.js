@@ -1,14 +1,10 @@
-import axios from 'axios';
 import toast from 'react-hot-toast';
-
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+import axiosInstance from '../api/axiosInstance';
 
 // SERVICE TO SIGN-UP
 export const signUp = async (userData) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/user/sign-up`, userData, {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    const response = await axiosInstance.post('/user/sign-up', userData);
     return response;
   } catch (error) {
     if (error.response) {  
@@ -23,9 +19,7 @@ export const signUp = async (userData) => {
 // SERVICE TO LOGIN
 export const login = async (credentials) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/user/login`, credentials, {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    const response = await axiosInstance.post('/user/login', credentials);
     return response;
   } catch (error) {
     if (error.response) {

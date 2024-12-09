@@ -2,14 +2,12 @@
 import React from 'react'
 import { useNavigate  } from 'react-router-dom';
 import { Button, Flex, Grid, GridItem, Image, Text } from '@chakra-ui/react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 import logo from '../assets/logo.jpg';
-import profile from '../assets/profile.png';
-import dayjs from 'dayjs';
 import toast from 'react-hot-toast';
 import { fetchPosts, updateLikes } from '../services/postService';
 import { fetchUser } from '../services/userService';
+import Profile from '../components/Profile';
+import Post from '../components/Post';
 
 function Home() {
   const [pageNumber, setPageNumber] = React.useState(0);
@@ -28,14 +26,14 @@ function Home() {
   // EFFECT FOR FETCHING USER DETAILS ONLY ONCE
   React.useEffect(() => {
     const fetchUserProfile = async () => {
-      const data = await fetchUser(navigate);
+      const data = await fetchUser();
       if (data) {
         setProfileData({
           fullName: data.fullName,
           userName: data.userName,
           profileImage: data.profileImage,
         }); 
-      }      
+      }
     }
 
     fetchUserProfile();
@@ -45,7 +43,8 @@ function Home() {
   React.useEffect(() => {
     const loadPosts = async () => {
       setLoading(true);
-      const data = await fetchPosts(pageNumber, pageSize, sortBy, navigate);
+      
+      const data = await fetchPosts(pageNumber, pageSize, sortBy);
       if (data) {
         setPosts(data || []);   
       }
@@ -58,7 +57,7 @@ function Home() {
 
   // HANDLE THE LIKE/UNLIKE ACTION
   const handleLike = async (postId, liked) => {
-    const response = await updateLikes(postId, navigate);
+    const response = await updateLikes(postId);
 
     if (response) {
       setPosts((prevPosts) =>
@@ -111,32 +110,7 @@ function Home() {
         <GridItem colSpan={3} bg='gray.100' overflowY='auto' onScroll={handleScroll} maxHeight='100vh'>
           {posts.length > 0 ? (
             posts.map((post) => (
-              <GridItem key={post.postId} colSpan={3} bg='white' mx={10} my={8} boxShadow='lg' borderRadius='lg'>
-                <Image src={`data:image/jpeg;base64,${post.image}`} alt='post' borderRadius='lg' width='full' />
-
-                <Flex justifyContent='space-between' py={4} px={5} alignItems='center'>
-                  <Flex gap={2} alignItems='center' onClick={() => handleLike(post.postId, post.liked)}>
-                    <FontAwesomeIcon 
-                      size='xl' 
-                      icon={faThumbsUp} 
-                      color={post.liked ? '#4052d6' : 'gray'} />
-                    <Text fontSize='xl' fontWeight='medium'>
-                      {post.likes || 0}
-                    </Text>
-                  </Flex>
-
-                  <Text 
-                    fontSize='xl'
-                    fontWeight='medium'>
-                      {post.userName}
-                  </Text>
-                  <Text 
-                    fontSize='xl'
-                    fontWeight='medium'>
-                    {dayjs(post.modifiedDate).format('MMM D, YYYY')}
-                  </Text>
-                </Flex>
-              </GridItem>
+              <Post key={post.postId} post={post} onLike={handleLike} />
             ))
           ) : (
             <Text 
@@ -148,26 +122,9 @@ function Home() {
             </Text>
           )}
         </GridItem>
-        {/* SECTION 2 - PROFILE */}
+        {/* SECTION 3 - PROFILE */}
         <GridItem colSpan={2} paddingY={10} display='flex' flexDirection='column' justifyContent='space-between'>
-          <Flex flexDirection='column' alignItems='center'>
-            <Image 
-              src={profileData.profileImage ? `data:image/jpeg;base64,${profileData.profileImage}` : profile}
-              borderRadius='full'
-              boxSize='150px'
-              marginBottom={4}
-              alt='profile' />
-            <Text 
-              fontSize='xl'
-              fontWeight='medium'>
-                {profileData.fullName}
-            </Text>
-            <Text 
-              fontSize='md'
-              fontWeight='normal'>
-                {profileData.userName}
-            </Text>
-          </Flex>
+          <Profile profileData={profileData} />
           <Flex flexDirection='column' alignItems='center'>
             <Button 
               colorScheme='blue'

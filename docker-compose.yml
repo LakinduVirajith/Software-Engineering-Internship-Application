@@ -4,7 +4,7 @@ name: social-media-application
 services:
   # Backend service using Spring Boot
   backend:
-    image: social-media-backend:1.0.0
+    image: ${DOCKER_HUB_USERNAME}/social-media-backend:1.0.0
     container_name: backend-application
     build:
       context: ./backend
@@ -19,7 +19,7 @@ services:
 
   # Frontend service using React
   frontend:
-    image: social-media-frontend:1.0.0
+    image: ${DOCKER_HUB_USERNAME}/social-media-frontend:1.0.0
     container_name: frontend-application
     build:
       context: ./frontend
@@ -32,5 +32,14 @@ networks:
   social-app-network:
     driver: bridge
 
-# docker-compose up --build
-# docker-compose down
+#---------------------------------------------------------------------------------------#
+
+# WHEN SETTING UP LOCALLY, CONFIGURE ${ACTIVE_PROFILE}, ${JWT_SECRET}, AND ${MONGODB_URI}.
+# ${DOCKER_HUB_USERNAME} IS NOT NEEDED FOR LOCAL DEVELOPMENT AND CAN BE REMOVED.
+
+#---------------------------------------------------------------------------------------#
+
+# STARTS SERVICES AND REBUILDS THEM IF NEEDED: [ docker-compose up --build ]
+# STOPS SERVICES AND REMOVES CONTAINERS, NETWORKS, AND VOLUMES: [ docker-compose down ]
+
+#---------------------------------------------------------------------------------------#
