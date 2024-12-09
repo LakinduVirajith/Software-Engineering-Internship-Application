@@ -64,7 +64,7 @@ public class PostServiceImpl implements PostService {
             if (sortBy.equals("time")) {
                 pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
             } else if (sortBy.equals("likes")) {
-                pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("likes.size")));
+                pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("likeCount")));
             } else {
                 pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
             }
@@ -90,7 +90,7 @@ public class PostServiceImpl implements PostService {
                         .postId(post.get_id())
                         .userName(userRepository.findById(post.getUserId()).get().getUserName())
                         .image(post.getImage())
-                        .likes(post.getLikes().size())
+                        .likes(post.getLikeCount())
                         .isLiked(post.getLikes().contains(commonService.getUserId()))
                         .modifiedDate(post.getModifiedDate())
                         .build();
@@ -114,6 +114,7 @@ public class PostServiceImpl implements PostService {
                 likes.add(commonService.getUserId()); // LIKE THE POST
             }
 
+            post.setLikeCount(post.getLikes().size());
             post.setLikes(likes);
             postRepository.save(post);
 

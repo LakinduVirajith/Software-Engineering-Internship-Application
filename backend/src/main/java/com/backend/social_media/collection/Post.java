@@ -30,6 +30,8 @@ public class Post {
 
     private List<String> likes; // LIST OF USER IDs WHO LIKED THE POST
 
+    private int likeCount;
+
     @CreatedDate
     private LocalDateTime createdDate;
 
@@ -38,5 +40,6 @@ public class Post {
 
     public Post() {
         this.likes = new ArrayList<>();
+        this.likeCount = 0; 
     }
 }
